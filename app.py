@@ -1,36 +1,14 @@
 import streamlit as st
-import requests
 import pandas as pd
 import random
 import logging
 from io import BytesIO
+from stackoverflow_api import fetch_questions
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Function to fetch questions from StackOverflow API
-def fetch_questions(query, num_questions):
-    logger.info(f"Fetching questions for query: {query}")
-    url = f"https://api.stackexchange.com/2.3/search/advanced"
-    params = {
-        'order': 'desc',
-        'sort': 'relevance',
-        'q': query,
-        'site': 'stackoverflow',
-        'filter': '!BHMIbze0EPheMk572h0ktETsgnphhU'
-    }
-    response = requests.get(url, params=params)
-    logger.info(f"Response status code: {response.status_code}")
-    if response.status_code == 200:
-        data = response.json()
-        questions = data.get('items', [])
-        logger.info(f"Number of questions fetched: {len(questions)}")
-        return questions[:num_questions]
-    else:
-        st.error(f"Failed to fetch questions for query: {query}")
-        return []
-    
 # Set the title of the app
 st.title("StackOverflow Topic Question Generator")
 
