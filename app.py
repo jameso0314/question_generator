@@ -30,6 +30,9 @@ def fetch_questions(query, num_questions):
     else:
         st.error(f"Failed to fetch questions for query: {query}")
         return []
+    
+# Set the title of the app
+st.title("StackOverflow Topic Question Generator")
 
 # Upload the CSV file
 uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
