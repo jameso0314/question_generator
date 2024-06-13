@@ -2,3 +2,5 @@ streamlit
 requests
 pandas
 xlsxwriter
+openai
+python-dotenv

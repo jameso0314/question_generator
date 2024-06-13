@@ -4,13 +4,14 @@ import random
 import logging
 from io import BytesIO
 from stackoverflow_api import fetch_questions
+from openai_api import refine_question
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Set the title of the app
-st.title("StackOverflow Topic Question Generator")
+st.title("StackOverflow Topic Question Generator with Refinement")
 
 # Upload the CSV file
 uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
@@ -44,18 +45,26 @@ if uploaded_file is not None:
         for topic in selected_topics:
             questions = fetch_questions(topic, num_questions)
             for q in questions:
+                refined_q = refine_question(q['title'])
                 all_questions.append({
                     'Topic': topic,
                     'Question Title': q['title'],
-                    'Question Link': q['link']
+                    'Refined Question': refined_q,
+                    'Question Link': q['link'],
                 })
 
         # Convert the list of questions to a DataFrame
         questions_df = pd.DataFrame(all_questions)
         logger.info(f"Questions DataFrame: {questions_df.head()}")
 
+        # Make links clickable
+        def make_clickable(link):
+            return f'<a href="{link}" target="_blank">{link}</a>'
+
+        questions_df['Question Link'] = questions_df['Question Link'].apply(make_clickable)
+
         # Display the questions in a table
-        st.write(questions_df)
+        st.write(questions_df.to_html(escape=False), unsafe_allow_html=True)
 
         # Button to download the table as an Excel file
         if not questions_df.empty:
