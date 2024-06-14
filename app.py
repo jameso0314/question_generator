@@ -45,12 +45,13 @@ if uploaded_file is not None:
         for topic in selected_topics:
             questions = fetch_questions(topic, num_questions)
             for q in questions:
-                refined_q = refine_question(q['title'])
+                refined_q = refine_question(q['title'], q['body'])
                 all_questions.append({
                     'Topic': topic,
                     'Question Title': q['title'],
-                    'Refined Question': refined_q,
+                   # 'Question Description': q['body'],
                     'Question Link': q['link'],
+                    'Refined Question': refined_q
                 })
 
         # Convert the list of questions to a DataFrame

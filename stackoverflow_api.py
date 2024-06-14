@@ -8,10 +8,10 @@ def fetch_questions(query, num_questions):
     url = f"https://api.stackexchange.com/2.3/search/advanced"
     params = {
         'order': 'desc',
-        'sort': 'relevance',
+        'sort': 'votes',
         'q': query,
         'site': 'stackoverflow',
-        'filter': '!BHMIbze0EPheMk572h0ktETsgnphhU'
+        'filter': 'withbody' 
     }
     response = requests.get(url, params=params)
     logger.info(f"Response status code: {response.status_code}")
@@ -19,7 +19,9 @@ def fetch_questions(query, num_questions):
         data = response.json()
         questions = data.get('items', [])
         logger.info(f"Number of questions fetched: {len(questions)}")
-        return questions[:num_questions]
+        # Filter questions to get those with high popularity (high votes and answers)
+        sorted_questions = sorted(questions, key=lambda x: (x['score'], x['answer_count']), reverse=True)
+        return sorted_questions[:num_questions]
     else:
         return []
 
@@ -31,6 +33,7 @@ if __name__ == "__main__":
         topic = sys.argv[1]
         questions = fetch_questions(topic, 5)
         for question in questions:
+            print(question)
             print(f"{question['title']} - {question['link']}")
     else:
         print("Please provide a search query as an argument.")

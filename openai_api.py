@@ -9,17 +9,20 @@ load_dotenv()
 # Set your OpenAI API key from the environment variable
 openai.api_key = os.getenv('OPENAI_API_KEY')
 
-def refine_question(question):
+def refine_question(title, description):
     instruction = f"""
     Refine the following question for clarity and conciseness:
-    "{question}"
+    
+    Title: "{title}"
+    Description: "{description}"
+
+    Generate a single conversational question based on the title and description in no more than three sentences.
     """
 
     messages = [
         {"role": "system", "content": "You are a helpful assistant."},
         {"role": "user", "content": instruction}
     ]
-
     try:
         response = openai.chat.completions.create(
             model="gpt-4-turbo",
