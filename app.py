@@ -50,8 +50,9 @@ if uploaded_file is not None:
                     'Topic': topic,
                     'Question Title': q['title'],
                    # 'Question Description': q['body'],
+                    'Refined Question': refined_q,
                     'Question Link': q['link'],
-                    'Refined Question': refined_q
+                    
                 })
 
         # Convert the list of questions to a DataFrame

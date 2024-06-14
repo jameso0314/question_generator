@@ -16,7 +16,7 @@ def refine_question(title, description):
     Title: "{title}"
     Description: "{description}"
 
-    Generate a single conversational question based on the title and description in no more than three sentences.
+    Generate a single conversational question based on the title and description in no more than one sentence.
     """
 
     messages = [
