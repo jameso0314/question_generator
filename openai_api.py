@@ -11,12 +11,12 @@ openai.api_key = os.getenv('OPENAI_API_KEY')
 
 def refine_question(title, description):
     instruction = f"""
-    Refine the following question for clarity and conciseness:
-    
+    Given the following information, generate a single conversational question in the third person that is clear, concise, and about two lines long.
+
     Title: "{title}"
     Description: "{description}"
 
-    Generate a single conversational question based on the title and description in no more than one sentence.
+    The question should be based on the title and description, and written as if asking someone else.
     """
 
     messages = [
