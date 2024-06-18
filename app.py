@@ -11,7 +11,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Set the title of the app
-st.title("StackOverflow Topic Question Generator with Use Case Statements")
+st.title("StackOverflow Topic Question Generator")
 
 # Upload the CSV file
 uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
