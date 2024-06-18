@@ -9,14 +9,19 @@ load_dotenv()
 # Set your OpenAI API key from the environment variable
 openai.api_key = os.getenv('OPENAI_API_KEY')
 
-def refine_question(title, description):
+def refine_question(title):
     instruction = f"""
-    Given the following information, generate a single conversational question in the third person that is clear, concise, and about two lines long.
+    Can you generate a more refined question based on the questions {title} on a level that would match a use case statement rather 
+    than a first person statement. Why? Having a first person statement may only limit the user (trainer) think in one scenario. 
+    But having it in a use case statement would allow them to think out of the box too and incorporate few additional items as well 
+    that would help solve the problem.
 
-    Title: "{title}"
-    Description: "{description}"
+    please dont start your statement with the follwoing:
 
-    The question should be based on the title and description, and written as if asking someone else.
+    Certainly! Here's a refined question framed as a use case statement:
+
+    Just give me the refined question and make it one long sentence.
+   
     """
 
     messages = [
