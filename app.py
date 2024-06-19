@@ -37,22 +37,33 @@ if uploaded_file is not None:
     # Select the number of questions per topic
     num_questions = st.number_input("Enter the number of questions you would like to generate for each topic", min_value=1)
 
+    # Input for the full topic name
+    full_topic_name = st.text_input("Enter the full topic name:")
+
+    # Input for the number of past years to filter questions
+    past_years = st.number_input("For the past how many years (leave blank for no filter):", min_value=0, step=1, format="%d")
+
     if st.button("Submit"):
         selected_topics = random.sample(cleaned_topics, num_topics)
         logger.info(f"Selected topics: {selected_topics}")
         all_questions = []
 
         for topic in selected_topics:
-            questions = fetch_questions(topic, num_questions)
+            years = past_years if past_years > 0 else None
+            questions = fetch_questions(topic, num_questions, years)
             logger.info(f"Fetched questions for topic '{topic}': {questions}")
             for q in questions:
-                refined_q = refine_question(q['title'])
+                result = refine_question(q['title'])
+                logger.info(f"Refinement result for '{q['title']}': {result}")
                 all_questions.append({
+                    'Full Topic Name': full_topic_name,
                     'Topic': topic,
                     'Question Title': q['title'],
-                   # 'Question Description': q.get('body', ''),
-                    'Use Case Statement': refined_q,
-                    'Question Link': q['link']
+                    #'Question Description': q.get('body', ''),
+                    'Refined Question': result.get('refined_question', 'Error'),
+                    'Domain': result.get('domain', 'Error'),
+                    'Use Case Statement': result.get('use_case', 'Error'),
+                    'Question Link': q['link'],
                 })
 
         # Convert the list of questions to a DataFrame
