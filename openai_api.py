@@ -45,7 +45,7 @@ def refine_question(title):
     ]
     try:
         response = openai.chat.completions.create(
-            model="gpt-4-turbo",
+            model="gpt-4o", #gpt-4o
             messages=messages,
             temperature=0.2,
             max_tokens=1024
@@ -89,7 +89,7 @@ def generate_questions(topic, num_questions, sub_topic):
 
     try:
         response = openai.chat.completions.create(
-            model="gpt-4-turbo",
+            model="gpt-4o",
             messages=messages,
             temperature=0.2,
             max_tokens=1024
@@ -105,6 +105,36 @@ def generate_questions(topic, num_questions, sub_topic):
     except Exception as e:
         logging.error(f"Error generating questions: {e}")
         return ["Error: Unable to generate questions"]
+    
+def break_down_topic(topic):
+    instruction = f"""
+    Break down the following topic into smaller, more specific subtopics that can be used for searching on StackOverflow:
+    Topic: "{topic}"
+    """
+
+    messages = [
+        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "user", "content": instruction}
+    ]
+
+    try:
+        response = openai.chat.completions.create(
+            model="gpt-4o",
+            messages=messages,
+            temperature=0.2,
+            max_tokens=1024
+        )
+
+        response_text = response.choices[0].message.content.strip()
+        logging.info(f"GPT model response text for generating questions: {response_text}")
+
+        subtopics = response_text.split('\n')
+        subtopics = [s.strip() for s in subtopics if s.strip()]
+        logging.info(f"Generated subtopics: {subtopics}")
+        return subtopics
+    except Exception as e:
+        logging.error(f"Error breaking down topic: {e}")
+        return [topic]  #
 
 
 # For testing purposes
@@ -112,15 +142,15 @@ if __name__ == "__main__":
     import sys
     logging.basicConfig(level=logging.INFO)
     if len(sys.argv) > 2:
-        test_title = sys.argv[1]
+        test_topic = sys.argv[1]
         num_questions = int(sys.argv[2])
-        result = generate_questions(test_title, num_questions)
-        print(f"Original: {test_title}")
+        result = generate_questions(test_topic, num_questions)
+        print(f"Original: {test_topic}")
         print(f"Generated Questions: {result}")
     elif len(sys.argv) > 1:
-        test_title = sys.argv[1]
-        result = refine_question(test_title)
-        print(f"Original: {test_title}")
-        print(f"Result: {result}")
+        test_topic = sys.argv[1]
+        result = break_down_topic(test_topic)
+        print(f"Original: {test_topic}")
+        print(f"Subtopics: {result}")
     else:
-        print("Please provide a question title and optionally the number of questions as arguments.")
+        print("Please provide a topic and optionally the number of questions as arguments.")

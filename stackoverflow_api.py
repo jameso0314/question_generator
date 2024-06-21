@@ -1,6 +1,8 @@
 import requests
 import logging
 from datetime import datetime, timedelta
+from requests.adapters import HTTPAdapter
+from requests.packages.urllib3.util.retry import Retry
 
 logger = logging.getLogger(__name__)
 
@@ -20,26 +22,40 @@ def fetch_questions(query, num_questions, past_years=None):
         cutoff_timestamp = int(cutoff_date.timestamp())
         params['fromdate'] = cutoff_timestamp
 
-    response = requests.get(url, params=params)
-    logger.info(f"Response status code: {response.status_code}")
+    session = requests.Session()
+    retry = Retry(
+        total=5,
+        read=5,
+        connect=5,
+        backoff_factor=0.3,
+        status_forcelist=(500, 502, 504),
+    )
+    adapter = HTTPAdapter(max_retries=retry)
+    session.mount('http://', adapter)
+    session.mount('https://', adapter)
 
-    if response.status_code == 200:
-        data = response.json()
-        questions = data.get('items', [])
+    try:
+        response = session.get(url, params=params, timeout=10)
+        logger.info(f"Response status code: {response.status_code}")
 
-        logging.info(f"question fetched: {questions}")
-        logger.info(f"Number of questions fetched: {len(questions)}")
+        if response.status_code == 200:
+            data = response.json()
+            questions = data.get('items', [])
+            logger.info(f"Number of questions fetched: {len(questions)}")
 
-        # Relax the filter criteria: include questions where query is in title or tags
-        sorted_questions = sorted(
-            [q for q in questions if query.lower() in q['title'].lower() or any(query.lower() in tag.lower() for tag in q.get('tags', []))],
-            key=lambda x: (x.get('score', 0), x.get('answer_count', 0)),
-            reverse=True
-        )
-        logger.info(f"Number of sorted questions: {len(sorted_questions)}")
-        return sorted_questions[:num_questions]
-    else:
-        logger.error(f"Failed to fetch questions: {response.text}")
+            sorted_questions = sorted(
+                [q for q in questions if query.lower() in q['title'].lower() or any(query.lower() in tag.lower() for tag in q.get('tags', []))],
+                key=lambda x: (x.get('score', 0), x.get('answer_count', 0)),
+                reverse=True
+            )
+            logger.info(f"Number of sorted questions: {len(sorted_questions)}")
+            return sorted_questions[:num_questions]
+        else:
+            logger.error(f"Failed to fetch questions: {response.text}")
+            return []
+
+    except requests.exceptions.RequestException as e:
+        logger.error(f"Request failed: {e}")
         return []
 
 # To make the module directly executable for testing purposes

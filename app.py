@@ -22,36 +22,27 @@ def load_and_clean_csv(uploaded_file):
 # Function to fetch or generate questions
 def fetch_or_generate_questions(topic, num_questions, full_topic_name, years):
     questions = fetch_questions(topic, num_questions, years)
-    if not questions:
-        logger.info(f"No questions fetched from StackOverflow for topic '{topic}'. Generating questions using ChatGPT.")
-        questions = generate_questions(full_topic_name, num_questions, sub_topic=topic)
-        return [
-            {
-                'Full Topic Name': full_topic_name,
-                'Topic': topic,
-                'Question Title': q,
-                #'Question Description': '',
-                'Refined Question': refine_question(q).get('refined_question', 'Error'),
-                'Domain': refine_question(q).get('domain', 'Error'),
-                'Use Case Statement': refine_question(q).get('use_case', 'Error'),
-                'Question Link': '',
-            }
-            for q in questions
-        ]
-    else:
-        return [
-            {
-                'Full Topic Name': full_topic_name,
-                'Topic': topic,
-                'Question Title': q['title'],
-                #'Question Description': q.get('body', ''),
-                'Refined Question': refine_question(q['title']).get('refined_question', 'Error'),
-                'Domain': refine_question(q['title']).get('domain', 'Error'),
-                'Use Case Statement': refine_question(q['title']).get('use_case', 'Error'),
-                'Question Link': q['link'],
-            }
-            for q in questions
-        ]
+    num_fetched_questions = len(questions)
+    
+    if num_fetched_questions < num_questions:
+        remaining_questions_needed = num_questions - num_fetched_questions
+        logger.info(f"Fetched {num_fetched_questions} questions from StackOverflow. Generating {remaining_questions_needed} more questions using ChatGPT.")
+        generated_questions = generate_questions(full_topic_name, remaining_questions_needed, sub_topic=topic)
+        questions.extend([{'title': q} for q in generated_questions])
+
+    return [
+        {
+            'Full Topic Name': full_topic_name,
+            'Topic': topic,
+            'Question Title': q['title'],
+            #'Question Description': q.get('body', ''),
+            'Refined Question': refine_question(q['title']).get('refined_question', 'Error'),
+            'Domain': refine_question(q['title']).get('domain', 'Error'),
+            'Use Case Statement': refine_question(q['title']).get('use_case', 'Error'),
+            'Question Link': q.get('link', ''),
+        }
+        for q in questions
+    ]
 
 # Function to process the topics and fetch or generate questions
 def process_topics(selected_topics, num_questions, full_topic_name, years):
