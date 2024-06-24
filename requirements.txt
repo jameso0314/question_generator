@@ -5,5 +5,5 @@ xlsxwriter==3.0.3
 openai==0.26.5
 python-dotenv==0.21.0
 sentence-transformers==2.2.2
-faiss-cpu==1.7.2
 chromadb==0.3.21
+hnswlib==0.6.1
