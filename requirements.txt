@@ -6,4 +6,4 @@ openai==0.26.5
 python-dotenv==0.21.0
 sentence-transformers==2.2.2
 chromadb==0.3.21
-hnswlib==0.6.1
+hnswlib>=0.7
