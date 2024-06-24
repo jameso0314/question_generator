@@ -87,7 +87,7 @@ def convert_df_to_excel(df):
 
 # Main function to run the Streamlit app
 def main():
-    st.title("StackOverflow Topic Question Generator with Use Case Statements")
+    st.title("QGen")
 
     uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
 
