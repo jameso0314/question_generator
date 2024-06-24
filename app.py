@@ -5,13 +5,11 @@ import logging
 from io import BytesIO
 from stackoverflow_api import fetch_questions
 from openai_api import refine_question, generate_questions
-from vector_db import VectorDB
+from vector_db import add_question, is_similar
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
-vector_db = VectorDB()
 
 # Function to load and clean CSV file
 def load_and_clean_csv(uploaded_file):
@@ -35,10 +33,10 @@ def fetch_or_generate_unique_questions(topic, num_questions, full_topic_name, ye
 
     unique_questions = []
     for q in questions:
-        if not check_db or not vector_db.is_similar(q['title'], topic):
+        if not check_db or not is_similar(q['title'], topic):
             unique_questions.append(q)
             if check_db:
-                vector_db.add_question(q['title'], topic)
+                add_question(q['title'], topic)
         if len(unique_questions) >= num_questions:
             break
 
@@ -47,7 +45,7 @@ def fetch_or_generate_unique_questions(topic, num_questions, full_topic_name, ye
         logger.info(f"Generating {remaining_questions_needed} more questions using ChatGPT.")
         generated_questions = generate_questions(full_topic_name, remaining_questions_needed, sub_topic=topic)
         for q in generated_questions:
-            if not check_db or not vector_db.is_similar(q, topic):
+            if not check_db or not is_similar(q, topic):
                 unique_question = {'title': q}
                 unique_questions.append(unique_question)
                 if check_db:
@@ -64,7 +62,7 @@ def fetch_or_generate_unique_questions(topic, num_questions, full_topic_name, ye
             'Refined Question': refine_question(q['title']).get('refined_question', 'Error'),
             'Domain': refine_question(q['title']).get('domain', 'Error'),
             'Use Case Statement': refine_question(q['title']).get('use_case', 'Error'),
-             'Question Link': q.get('link', ''),
+            'Question Link': q.get('link', '')
         }
         for q in unique_questions
     ]
