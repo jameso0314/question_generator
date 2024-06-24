@@ -49,7 +49,7 @@ def fetch_or_generate_unique_questions(topic, num_questions, full_topic_name, ye
                 unique_question = {'title': q}
                 unique_questions.append(unique_question)
                 if check_db:
-                    vector_db.add_question(q, topic)
+                    add_question(q, topic)
             if len(unique_questions) >= num_questions:
                 break
 
