@@ -63,7 +63,7 @@ def process_topics(selected_topics, num_questions, full_topic_name, years):
     return pd.DataFrame(all_questions)
 
 # Function to convert DataFrame to Excel
-@st.cache_data
+#@st.cache_data
 def convert_df_to_excel(df):
     output = BytesIO()
     with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
