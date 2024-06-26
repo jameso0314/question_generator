@@ -79,7 +79,7 @@ def main():
     if uploaded_file is not None:
         cleaned_topics = load_and_clean_csv(uploaded_file)
 
-        num_topics = st.number_input("How many topics would you like to generate questions for?", min_value=1, max_value=len(cleaned_topics))
+        num_topics = st.number_input("How many sub-topics would you like to generate questions for?", min_value=1, max_value=len(cleaned_topics))
         num_questions = st.number_input("Enter the number of questions you would like to generate for each topic", min_value=1)
         full_topic_name = st.text_input("Enter the full topic name:")
         past_years = st.number_input("For the past how many years (leave blank for no filter):", min_value=0, step=1, format="%d")
