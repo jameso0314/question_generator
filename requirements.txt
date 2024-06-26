@@ -5,7 +5,3 @@ numpy==1.23.5
 xlsxwriter==3.0.3
 openai==0.26.5
 python-dotenv==0.21.0
-sentence-transformers==2.2.2
-chromadb==0.3.21
-hnswlib==0.7.0
-pydantic==1.10.9
